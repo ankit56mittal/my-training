@@ -22,7 +22,7 @@ router.post("/createnewAuthor", authorController.createnewAuthor  )
 
  router.put("/newBook",bookController.putreq)
 
- 
+ router.put("/newPut",bookController.updatebookprice)
 
  router.post("/createnewBook", bookController.createnewBook  )
 router.post("/createPublisher",publishercontroller.createPublisher)
