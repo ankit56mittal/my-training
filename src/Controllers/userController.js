@@ -61,7 +61,7 @@ const userData = async (req, res) => {
             if (!isValidPin.test(address.pincode)) return res.status(400).send({ status: false, message: "pincode should be 6 digit" })
         }
 
-
+           
         // Create User
         const result = await userModel.create({ title, name, phone, email, password, address });
         res.status(201).send({ status: true, data: result });

@@ -11,9 +11,9 @@ const createReview = async function (req, res) {
         const bookIdParams = req.params.bookId
 
         // Validation of Req Body
-        if (!validation.isValidRequest(reviewData)) return res.status(400).send({ status: false, messege: "Please enter review data" })
+        if (!validation.isValidRequest(reviewData)) return res.status(400).send({ status: false, message: "Please enter review data" })
         // Validation of book id in Params
-        if (!validation.isValidId(bookIdParams)) return res.status(400).send({ status: false, messege: "Not a valid Book id in url" });
+        if (!validation.isValidId(bookIdParams)) return res.status(400).send({ status: false, message: "Not a valid Book id in url" });
 
         // Find not deleted books by id
         const findBook = await bookModel.findOne({ _id: bookIdParams, isDeleted: false })
@@ -28,7 +28,7 @@ const createReview = async function (req, res) {
         }
 
         //Rating Validation
-        if (!validation.isValid(rating)) return res.status(400).send({ status: false, messege: "Rating is required" })
+        if (!validation.isValid(rating)) return res.status(400).send({ status: false, message: "Rating is required" })
         if (((rating < 1) || (rating > 5)) || (!validation.isValidRating(rating)))
             return res.status(400).send({ status: false, message: "Rating must be  1 to 5 numeriacl value" });
 
@@ -55,10 +55,10 @@ const createReview = async function (req, res) {
         const bookWithReview = updatingReviewCount.toObject()
         bookWithReview['reviewsData'] = reviewList
 
-        res.status(201).send({ status: true, messege: "Review Successful", data: bookWithReview })
+        res.status(201).send({ status: true, message: "Review Successful", data: bookWithReview })
     }
     catch (err) {
-        return res.status(500).send({ status: false, messege: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -71,8 +71,8 @@ const updateReview = async function (req, res) {
         const dataToUpdate = req.body
 
         // Validation of Id's from Url
-        if (!validation.isValidId(bookIdParams)) return res.status(400).send({ status: false, msg: "Not a valid Book id from url." });
-        if (!validation.isValidId(reviewIdParams)) return res.status(400).send({ status: false, msg: "Not a valid Review id from url." });
+        if (!validation.isValidId(bookIdParams)) return res.status(400).send({ status: false, message: "Not a valid Book id from url." });
+        if (!validation.isValidId(reviewIdParams)) return res.status(400).send({ status: false, message: "Not a valid Review id from url." });
 
         // Finding not deleted book by Id in url
         const findBook = await bookModel.findOne({ _id: bookIdParams, isDeleted: false }).select({ __v: 0 })
@@ -84,7 +84,7 @@ const updateReview = async function (req, res) {
 
         // verifying review id belongs to the book or not
         const bookIdFromReview = findReview.bookId.toString()
-        if (bookIdParams !== bookIdFromReview) return res.status(400).send({ status: false, messege: "The review you want to update not belongs to the book provide in url." })
+        if (bookIdParams !== bookIdFromReview) return res.status(400).send({ status: false, message: "The review you want to update not belongs to the book provide in url." })
 
         // User input validation
         const { reviewedBy, rating, review } = dataToUpdate
@@ -100,6 +100,7 @@ const updateReview = async function (req, res) {
         dataToUpdate['reviewedBy'] = reviewedBy
 
         //If Rating by is present 
+        
         if (rating == "") {
             return res.status(400).send({ status: false, message: "Rating cannot be empty" })
         } else if (rating) {
@@ -123,10 +124,10 @@ const updateReview = async function (req, res) {
         const booksWithUpdatedReview = findBook.toObject()
         booksWithUpdatedReview['reviewsData'] = updatedReview
 
-        res.status(200).send({ status: true, messege: "Review Updated successfully", data: booksWithUpdatedReview })
+        return res.status(200).send({ status: true, message: "Review Updated successfully", data: booksWithUpdatedReview })
 
     } catch (err) {
-        return res.status(500).send({ status: false, messege: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -152,8 +153,8 @@ const deletedReview = async (req, res) => {
         if (!reviewDoc) return res.status(404).send({ status: false, message: "reviewId does't exist" })
 
         // verifying review id belongs to the book or not
-        const bookIdfromreview = reviewDoc.toObject()
-        if (bookId !== bookIdfromreview) return res.status(400).send({ status: false, message: "review you want to delete not belongs to the book provide in URL" })
+        // const bookIdfromreview = reviewDoc.toObject()
+        // if (bookId !== bookIdfromreview) return res.status(400).send({ status: false, message: "review you want to delete not belongs to the book provide in URL" })
 
 
         //Deleting the review

@@ -185,7 +185,7 @@ const updateBooks = async (req, res) => {
 
         // Final data Updation
         const updatedDetails = await bookModel.findOneAndUpdate({ _id: bookIdParams }, dataToUpdate, { new: true })
-        res.status(200).send({ status: true, msg: "Book details updated successfully", data: updatedDetails })
+        res.status(200).send({ status: true, message: "Book details updated successfully", data: updatedDetails })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message });
