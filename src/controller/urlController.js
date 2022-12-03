@@ -1,8 +1,8 @@
-//const validUrl = require("valid-url");
+
 const shortid = require("shortid");
 const redis = require("redis");//temporary database, which used to store temporary data for quick response.
 
-const  {promisify} = require("util");//util is a package & promisify is its one of the function.
+const  {promisify} = require("util");
 const urlModel = require("../models/urlModel");
 
 
@@ -11,6 +11,7 @@ const redisClient = redis.createClient(
   "redis-17983.c212.ap-south-1-1.ec2.cloud.redislabs.com",     //ip address
   { no_ready_check: true}
 );
+
 
 redisClient.auth("3pLDCvebl3GLDREqI9yoALqNaxt9dbHF", function (err) {
   if (err) throw err;
@@ -45,7 +46,7 @@ const createUrl = async function (req, res) {
   try {
     let data = req.body;
 
-    if (Object.keys(data).length == 0) {     //Object.keys returns an array
+    if (Object.keys(data).length == 0) {     
       return res
         .status(400)
         .send({ status: false, message: "Body should not be empty" });
@@ -97,11 +98,7 @@ const createUrl = async function (req, res) {
 
      return res.status(201).send({ status: true,message:"Data created...data coming from db", data: data });
      }
-    //  else {
-    //   return res
-    //     .status(200)
-    //     .send({ status: true, message: "Already generated", data: permanentUrl });
-    // }
+   
   } catch (err) {
    return res.status(500).send({ status: false, message: err.message });
   }
@@ -113,7 +110,7 @@ const createUrl = async function (req, res) {
 const getUrl = async function (req, res) {
   try {
     // find a document match to the code in req.params.code
-    let urlCode = req.params.urlCode                // urlCode
+    let urlCode = req.params.urlCode                
 
     if(!shortid.isValid(urlCode)){
       return res.status(400).send({ status: false, message: "urlCode is not valid" })
