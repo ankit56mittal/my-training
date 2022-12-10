@@ -57,9 +57,9 @@ const updateStudent = async function (req, res) {
     //teacherId, name, data(marks, subject)
 
     let teacherId = req.params.teacherId;
-    let studentId = req.params.studentId
+    let studentId = req.params.studentId;
     let { name, data } = req.body;
-    let { subject, marks } = data[0];
+   
     let filter = {  }
 
     // if (data.length === 0) {
@@ -91,7 +91,8 @@ const updateStudent = async function (req, res) {
     }
 
     //if theacher is entering the marks of the subject that is already entered
-
+  if(data){
+ let { subject, marks } = data[0];
     if (subject && marks) {
 
 
@@ -101,7 +102,7 @@ const updateStudent = async function (req, res) {
 
       if (subjectExist !== -1) {
 
-        // filter.data = { "data.subject": subject, $inc: { marks: +marks } }
+        //filter.data = { "data.subject": subject, $inc: { marks: +marks } }
 
         const increaseMarks = await studentModel.findOneAndUpdate({_id: studentId, "data.subject": subject },
         { $inc: { "data.$.marks": +marks } }, { new: true });
@@ -112,15 +113,21 @@ const updateStudent = async function (req, res) {
         // filter.data = { $push: { subject: subject, marks: marks } }
 
         const updateMarks = await studentModel.findOneAndUpdate({ teacherId: teacherId },
-        { $push: {"data":{  subject:subject, marks: marks } }}, { new: true });
+        { $push: {"data":[{  subject:subject, marks: marks }] }}, { new: true });
 
       }
 
-      let updatedStudent = await studentModel.findOneAndUpdate({ _id: studentId }, filter, { new: true })
+      
+    }
+
+
+
+  }
+   
+    let updatedStudent = await studentModel.findOneAndUpdate({ _id: studentId }, filter, { new: true })
 
       return res.status(200).send({ status: true, message: "Student details updated successfully", data: updatedStudent })
 
-    }
   }
   catch (err) {
     return res.status(500).send({ status: false, message: err.message });
