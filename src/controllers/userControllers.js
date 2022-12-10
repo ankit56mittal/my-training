@@ -95,13 +95,13 @@ const userLogin = async function (req, res) {
     }
 
     let token = jwt.sign({
-      userId: checkEmail._id.toString(),
+      teacherId: checkEmail._id.toString(),
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, //expires in 24 hr
     }, "group42Project5");
     res.setHeader("x-api-key", token);
     
-    return res.status(200).send({ status: true, message: "User Login Successful", data: { userId: checkEmail._id, token: token }, });
+    return res.status(200).send({ status: true, message: "User Login Successful", data: { teacherId: checkEmail._id, token: token }, });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }

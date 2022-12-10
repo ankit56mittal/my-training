@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
-const UserModel = require("../models/userModel");
-const { isValidObjectId } = require("../validator/validation");
-
+const teacherModel = require("../models/teacherModel");
+const { isValidObjectId } = require("mongoose");
 //===========================Authorization=============================//
 const authentication = async function (req, res, next) {
   try {
@@ -35,19 +34,19 @@ const authentication = async function (req, res, next) {
 
 const authorization = async function (req, res, next) {
   try {
-    let userLoggedIn = req.tokenData; //Accessing userId from token attribute
-    let userId = req.params.userId; // pass user id in path params
+    let teacherLoggedIn = req.tokenData; //Accessing userId from token attribute
+    req.teacherId = req.params.teacherId; // pass user id in path params
     //check if user id is valid or not
-    if (!isValidObjectId(userId)) {
+    if (!isValidObjectId(req.teacherId)) {
       return res.status(400).send({status: false,message: "userId is invalid"});
     }
-    let userAccessing = await UserModel.findById(userId);
-    if (!userAccessing) {
+    let teacherAccessing = await teacherModel.findById(req.teacherId);
+    if (!teacherAccessing) {
       return res.status(404).send({status: false,message: "Error! Please check userid and try again",
       });
     }
 
-    if (userId !== userLoggedIn.userId) {
+    if (req.teacherId !== teacherLoggedIn.teacherId) {
       return res.status(403).send({status: false,msg: "Error, authorization failed"});
     }
     next();
