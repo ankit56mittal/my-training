@@ -8,9 +8,9 @@ router.post('/createUser', userController.createUser);
 router.post('/userLogin', userController.userLogin);
 router.post('/filledMarks/:teacherId',authentication.authentication,authentication.authorization, studentsController.filledMarks);
 
-router.post("/updatestudent/:teacherId/:studentId",authentication.authentication,authentication.authorization, studentsController.updateStudent)
+router.post("/updatestudent/:teacherId/:studentId", studentsController.updateStudent)
 
-router.get("/getStudents/:teacherId",authentication.authentication,authentication.authorization, studentsController.getStudent)
+router.get("/getStudents/:teacherId",studentsController.getStudent)
 
 router.put("/deletStudents/:teacherId/:studentId",authentication.authentication,authentication.authorization, studentsController.deleteStudent)
 
