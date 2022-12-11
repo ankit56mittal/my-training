@@ -7,14 +7,14 @@ const { isValidObjectId } = require("mongoose");
 const filledMarks = async (req, res) => {
   // res.setHeader('Access-Conrol-Allow-Origin', '*');
   try {
-    let teacherId = req.params.teacherId;
+    //let teacherId = req.params.teacherId;
     let { name, data } = req.body;
     let { subject, marks } = data;
 
     if (data.length === 0) {
       return res.status(400).send({ status: false, message: "fill students subject and marks data" });
     }
-    if (!isValidObjectId(teacherId)) {
+    if (!isValidObjectId(req.teacherId)) {
       return res.status(400).send({ status: false, message: " Please!! input a valid Id :(" });
     }
 
@@ -37,7 +37,7 @@ const filledMarks = async (req, res) => {
     //   return res.status(400).send({ status: false, message: "Please Enter Valid marks" });
 
     let Obj = {
-      teacherId: teacherId,
+      teacherId: req.teacherId,
       name: name,
       data: data,
     }
@@ -56,14 +56,14 @@ const updateStudent = async function (req, res) {
   try {
 
 
-    let teacherId = req.params.teacherId;
+   // let teacherId = req.params.teacherId;
     let studentId = req.params.studentId;
     let { name, data } = req.body;
 
     let query = {}
 
     //validate the teacher Id
-    if (!isValidObjectId(teacherId)) {
+    if (!isValidObjectId(req.teacherId)) {
       return res.status(400).send({ status: false, message: " Please!! input a valid Id :(" });
     }
 
@@ -78,7 +78,7 @@ const updateStudent = async function (req, res) {
 
 
     //check if right teacher is entering the right student marks
-    if (studentExist.teacherId != teacherId) {
+    if (studentExist.teacherId != req.teacherId) {
       return res.status(404).send({ status: false, message: "studentId and teacher id does not match" })
     }
 
@@ -140,32 +140,44 @@ const getStudent = async function (req, res) {
   try {
 
 
-    const { name, subject, marksGreaterThan, marksLessThan } = req.query;
-    let query = {}
+    const { name, data  } = req.query;
+     let query = {isDeleted:false}
 
     if (name) {
 
       query.name = name
     }
     
-    if (subject) {
+    
+   if(data){
+   let {subject, marksGreaterThan, marksLessThan} = data
+    if(subject){
 
-      query.subject = { 'data.subject': subject }
+      query ={data:[]}
+
+      let x = query.data.push({subject:subject })
+
+      x = {"data.subject":subject}
       console.log(query)
+      console.log(x)
     }
+    
+   
 
-    if (query.marksGreaterThan && query.marksLessThan) {
-      query.marks = { 'data.$.marks': { $gt: Number(marksGreaterThan), $lt: Number(marksLessThan) } }
-    }
-    else if (query.marksGreaterThan) {
-      query.marks = { 'data.$.marks': { $gt: Number(marksGreaterThan) } }
-    } else if (query.marksLessThan) {
-      query.marks = { 'data.$.marks': { $lt: Number(marksLessThan) } }
-    };
-    console.log(query.subject)
-    const getStudent = await studentModel.find(query.subject)
+  if (query.marksGreaterThan && query.marksLessThan) {
+    query.marks =  {"data":  { marks: { $gt: marksGreaterThan, $lte: marksLessThan }  }}
+  }
+  else if (query.marksGreaterThan) {
+    query.marks = {"data":  { marks: { $gt: marksGreaterThan } }}
+  } else if (query.marksLessThan) {
+    query.marks ={"data": { marks: { $lt: marksLessThan }  }}
+  };
+   }
+      
+     console.log(query)
+    const getStudent = await studentModel.find( {...query} )
 
-    return res.status(200).send({ status: true, message: "Here the the requireddetais of students", length : getStudent.length, data: getStudent })
+    return res.status(200).send({ status: true, message: "Here are the requireddetais of students", length : getStudent.length, data: getStudent })
 
 
 
@@ -182,7 +194,7 @@ const getStudent = async function (req, res) {
 const deleteStudent = async function (req, res) {
   try {
 
-
+   
     let studentId = req.params.studentId;
 
     const studentExist = await studentModel.findOne({ _id: studentId }, { isDeleted: false })
@@ -193,7 +205,7 @@ const deleteStudent = async function (req, res) {
       return res.status(404).send({ status: false, message: "studentId and teacher id does not match" })
     }
 
-    let deletedStudent = await findOneAndUpdate({ _id: studentId, teacherId: req.teacherId }, { isDeleted: true })
+    let deletedStudent = await studentModel.findOneAndUpdate({ _id: studentId, teacherId: req.teacherId},{$set: { isDeleted: true }}, {new:true})
 
     return res.status(200).send({ status: true, message: "student deleted successfully", data: deletedStudent })
 
