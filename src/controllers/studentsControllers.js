@@ -139,43 +139,43 @@ const updateStudent = async function (req, res) {
 const getStudent = async function (req, res) {
   try {
 
-
-    const { name, data  } = req.query;
-     let query = {isDeleted:false}
-
-    if (name) {
-
-      query.name = name
-    }
     
-    
-   if(data){
-   let {subject, marksGreaterThan, marksLessThan} = data
-    if(subject){
+    // let query = { isDeleted: false };
+      //let teacherId = req.params.teacherId;
+     let filter = {isDeleted:false}
 
-      query ={data:[]}
+     
 
-      let x = query.data.push({subject:subject })
+    //  let nameIncludes = RegExp(`${data.name}`);
+    //  if (name) {
+    //    query.title = nameIncludes;
+    //  }
 
-      x = {"data.subject":subject}
-      console.log(query)
-      console.log(x)
-    }
+    if (req.query.subject) {
+          
+          filter["data.subject"] = req.query.subject;
+      }
+  
+
+    if (req.query.name) {
+       filter.name = req.query.name
+      }
+   
     
    
 
-  if (query.marksGreaterThan && query.marksLessThan) {
-    query.marks =  {"data":  { marks: { $gt: marksGreaterThan, $lte: marksLessThan }  }}
+  if (req.query.marksGreaterThan && req.query.marksLessThan) {
+    filter["data.marks"] =  { $gt: Number(req.query.marksGreaterThan), $lte: Number(req.query.marksLessThan) } 
   }
-  else if (query.marksGreaterThan) {
-    query.marks = {"data":  { marks: { $gt: marksGreaterThan } }}
-  } else if (query.marksLessThan) {
-    query.marks ={"data": { marks: { $lt: marksLessThan }  }}
+  else if (req.query.marksGreaterThan) {
+    filter["data.marks"] =  { $gt:Number(req.query.marksGreaterThan) } 
+  } else if (req.query.marksLessThan) {
+    filter["data.marks"] ={ $lt: Number(req.query.marksLessThan) }
   };
-   }
+   
       
-     console.log(query)
-    const getStudent = await studentModel.find( {...query} )
+     console.log(filter)
+    const getStudent = await studentModel.find(filter)
 
     return res.status(200).send({ status: true, message: "Here are the requireddetais of students", length : getStudent.length, data: getStudent })
 
