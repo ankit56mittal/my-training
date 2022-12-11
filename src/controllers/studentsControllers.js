@@ -90,6 +90,7 @@ const updateStudent = async function (req, res) {
       query.name = name
     }
 
+    if(data){
     //if theacher is entering the marks of the subject that is already entered
     if (data.length != 0) {
 
@@ -121,6 +122,7 @@ const updateStudent = async function (req, res) {
       }
 
     }
+  }
 
     let updatedStudent = await studentModel.findOneAndUpdate({ _id: studentId }, query, { new: true })
 
